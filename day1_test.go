@@ -1,4 +1,5 @@
-package day1
+// trebuchet
+package main
 
 import (
 	"bufio"
