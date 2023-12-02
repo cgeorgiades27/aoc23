@@ -4,6 +4,7 @@ package main
 import (
 	"bufio"
 	"io"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -74,6 +75,12 @@ func trebuchet(r io.Reader) int {
 }
 
 func TestTrebuchet(t *testing.T) {
+	inFile, err := os.Open("./day1.in")
+	if err != nil {
+		t.Fatalf("unable to open file: %v", err)
+	}
+	defer inFile.Close()
+
 	testCases := []struct {
 		reader   io.Reader
 		expected int
@@ -94,6 +101,10 @@ func TestTrebuchet(t *testing.T) {
 			zoneight234
 			7pqrstsixteen`),
 			expected: 281,
+		},
+		{
+			reader:   bufio.NewReader(inFile),
+			expected: 52840,
 		},
 	}
 
