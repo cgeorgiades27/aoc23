@@ -77,7 +77,31 @@ func findZZZ(first, directions string, network map[string]NetworkNode) int {
 	return sum
 }
 
-func TestFindZZZ(t *testing.T) {
+func findZZZIterative(first, directions string, network map[string]NetworkNode) int {
+	sum := 0
+	index := first
+	directionsIndex := 0
+	for index != "ZZZ" {
+		currDir := string(directions[directionsIndex])
+		sum++
+		directionsIndex++
+
+		// reset directions index
+		if directionsIndex == len(directions) {
+			directionsIndex = 0
+		}
+
+		if currDir == "L" {
+			index = network[index].Left
+		} else {
+			index = network[index].Right
+		}
+	}
+
+	return sum
+}
+
+func TestFindZZZIterative(t *testing.T) {
 	inFile, _ := os.Open("infiles/day8.in")
 	r := bufio.NewReader(inFile)
 	defer inFile.Close()
@@ -110,6 +134,43 @@ func TestFindZZZ(t *testing.T) {
 		{
 			reader:   r,
 			expected: 100,
+		},
+	}
+
+	for _, test := range testCases {
+		first, directions, network := buildNodeGraph(test.reader)
+		actual := findZZZIterative(first, directions, network)
+		if actual != test.expected {
+			t.Errorf("Expected %d, got %d", test.expected, actual)
+		}
+	}
+}
+
+func TestFindZZZ(t *testing.T) {
+	testCases := []struct {
+		reader   io.Reader
+		expected int
+	}{
+		{
+			reader: strings.NewReader(`RL
+
+			AAA = (BBB, CCC)
+			BBB = (DDD, EEE)
+			CCC = (ZZZ, GGG)
+			DDD = (DDD, DDD)
+			EEE = (EEE, EEE)
+			GGG = (GGG, GGG)
+			ZZZ = (ZZZ, ZZZ)
+			`),
+			expected: 2,
+		},
+		{
+			reader: strings.NewReader(`LLR
+
+			AAA = (BBB, BBB)
+			BBB = (AAA, ZZZ)
+			ZZZ = (ZZZ, ZZZ)`),
+			expected: 6,
 		},
 	}
 
