@@ -75,7 +75,7 @@ func trebuchet(r io.Reader) int {
 }
 
 func TestTrebuchet(t *testing.T) {
-	inFile, err := os.Open("./day1.in")
+	inFile, err := os.Open("infiles/day1.in")
 	if err != nil {
 		t.Fatalf("unable to open file: %v", err)
 	}
