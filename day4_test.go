@@ -50,6 +50,32 @@ func computeScratchValue(r io.Reader) int {
 	return scratchSum
 }
 
+func computeScratchCopies(r io.Reader) int {
+	totalCards, winningCards := buildTable(r)
+
+	m := make(map[int]int)
+	var recurser func(*int, int)
+	recurser = func(sum *int, index int) {
+		card := winningCards[index]
+		if len(card) == 0 {
+			return
+		}
+
+		*sum += len(card)
+		for _, v := range card {
+			m[v]++
+			recurser(sum, v)
+		}
+	}
+
+	sum := 0
+	for i := 1; i <= totalCards; i++ {
+		recurser(&sum, i)
+	}
+
+	return sum + totalCards
+}
+
 func buildTable(r io.Reader) (int, map[int][]int) {
 	cards := make(map[int][]int)
 
@@ -89,30 +115,6 @@ func buildTable(r io.Reader) (int, map[int][]int) {
 	return lineCount, cards
 }
 
-func computeScratchCopies(r io.Reader) int {
-	totalCards, winningCards := buildTable(r)
-
-	var recurser func(*int, int)
-	recurser = func(sum *int, index int) {
-		card := winningCards[index]
-		if len(card) == 0 {
-			return
-		}
-
-		*sum += len(card)
-		for _, v := range card {
-			recurser(sum, v)
-		}
-	}
-
-	sum := 0
-	for i := 1; i <= totalCards; i++ {
-		recurser(&sum, i)
-	}
-
-	return sum
-}
-
 func TestComputeScratchCopies(t *testing.T) {
 	inFile, _ := os.Open("infiles/day4.in")
 	defer inFile.Close()
@@ -132,7 +134,7 @@ func TestComputeScratchCopies(t *testing.T) {
 		},
 		{
 			reader:   bufio.NewReader(inFile),
-			expected: 27845,
+			expected: 7386339,
 		},
 	}
 
